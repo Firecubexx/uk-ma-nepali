@@ -1,24 +1,66 @@
-const handleRegister = async () => {
+const express = require('express');
+const router = express.Router();
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+
+// Generate token
+const generateToken = (id) =>
+  jwt.sign({ id }, process.env.JWT_SECRET || 'secret', { expiresIn: '30d' });
+
+// REGISTER
+router.post('/register', async (req, res) => {
   try {
-    const res = await api.post('/auth/register', {
-      name: fullName,        // ✅ FIXED
-      email,
-      password,
-      location: city,        // ✅ FIXED
-      gender,
-      age
+    const { name, email, password, location, gender, age } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email, password required' });
+    }
+
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    const user = await User.create({ name, email, password, location, gender, age });
+
+    res.status(201).json({
+      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        location: user.location,
+      },
     });
 
-    console.log(res.data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-    // OPTIONAL: auto login after register
-    localStorage.setItem('umn_token', res.data.token);
-    localStorage.setItem('umn_user', JSON.stringify(res.data.user));
+// LOGIN
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-    window.location.href = '/'; // redirect after success
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+
+    res.json({
+      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
 
   } catch (err) {
-    console.log(err.response?.data || err.message);
-    alert(err.response?.data?.message || "Registration failed");
+    res.status(500).json({ message: err.message });
   }
-};
+});
+
+module.exports = router;
