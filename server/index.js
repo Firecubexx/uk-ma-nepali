@@ -9,16 +9,22 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
+// ✅ Allow both local + deployed frontend
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://uk-ma-nepali-1.onrender.com'
+];
+
 // Socket.io setup
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
   },
 });
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -70,15 +76,16 @@ io.on('connection', (socket) => {
   });
 });
 
-// ✅ MongoDB Atlas Connection
-const PORT = 5000;
+// ✅ Use Render PORT
+const PORT = process.env.PORT || 5000;
 
+// MongoDB
 mongoose
-  .connect("mongodb+srv://uttamwolisharma_db_user:Passwards1@ukmanepali.juvjgqe.mongodb.net/ukmanepali?retryWrites=true&w=majority")
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected');
     server.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
