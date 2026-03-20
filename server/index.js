@@ -9,36 +9,18 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Allow frontend (LOCAL + RENDER)
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://uk-ma-nepali-1.onrender.com'
-];
+// ✅ SIMPLE CORS (FIXES EVERYTHING)
+app.use(cors());
 
-// ✅ CORS FIX (IMPORTANT)
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps, curl)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
-
+// Middleware
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ SOCKET.IO FIX
+// ✅ SOCKET.IO (SIMPLE)
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: '*',
     methods: ['GET', 'POST'],
-    credentials: true
   },
 });
 

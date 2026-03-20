@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // ✅ USE YOUR BACKEND URL FROM ENV
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + '/api'
+  baseURL: 'https://uk-ma-nepali-1.onrender.com/api'
 });
 
 // Attach JWT token to every request
