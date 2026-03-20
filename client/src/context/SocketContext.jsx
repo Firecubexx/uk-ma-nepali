@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
+const API = import.meta.env.VITE_API_URL;
 const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
@@ -12,7 +13,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (!user) return;
 
-    const s = io('http://localhost:5000', {
+    const s = io(API, {
       transports: ['websocket'],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,

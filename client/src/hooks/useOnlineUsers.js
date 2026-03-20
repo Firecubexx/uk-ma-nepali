@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 
+const API = import.meta.env.VITE_API_URL;
+
 // Singleton socket for online tracking — shared across all hook instances
 let _socket = null;
 let _listeners = new Set();
@@ -9,7 +11,7 @@ let _onlineUsers = [];
 
 function getSharedSocket(userId) {
   if (!_socket) {
-    _socket = io('http://localhost:5000', { transports: ['websocket'] });
+    _socket = io(API, { transports: ['websocket'] });
     _socket.on('connect', () => _socket.emit('userOnline', userId));
     _socket.on('onlineUsers', (users) => {
       _onlineUsers = users;
