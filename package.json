@@ -1,0 +1,15 @@
+{
+  "name": "uk-ma-nepali",
+  "version": "1.0.0",
+  "description": "UK ma Nepali - Social platform for Nepali people in the UK",
+  "scripts": {
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "setup": "cp server/.env.example server/.env && echo '✅ .env created in server/'",
+    "start": "node scripts/start.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
