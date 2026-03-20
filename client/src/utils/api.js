@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// ✅ USE YOUR BACKEND URL FROM ENV
 const api = axios.create({
-  baseURL: 'https://uk-ma-nepali-1.onrender.com/api'
+  baseURL: 'https://uk-ma-nepali.onrender.com/api'
 });
 
 // Attach JWT token to every request
