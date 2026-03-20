@@ -4,8 +4,18 @@ import api from '../utils/api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(() => JSON.parse(localStorage.getItem('umn_user') || 'null'));
-  const [token, setToken]     = useState(() => localStorage.getItem('umn_token') || null);
+
+  // ✅ SAFE PARSE FUNCTION (THIS FIXES YOUR ERROR)
+  const safeParse = (value) => {
+    try {
+      return value && value !== "undefined" ? JSON.parse(value) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const [user, setUser] = useState(() => safeParse(localStorage.getItem('umn_user')));
+  const [token, setToken] = useState(() => localStorage.getItem('umn_token') || null);
   const [loading, setLoading] = useState(true);
 
   // Verify token on mount
@@ -23,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
     verify();
-  }, []);
+  }, [token]);
 
   const login = (userData, userToken) => {
     setUser(userData);
