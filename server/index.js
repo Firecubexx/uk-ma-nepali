@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const server = http.createServer(app);
@@ -14,6 +15,7 @@ app.use(cors());
 
 // Middleware
 app.use(express.json());
+app.use('/api/auth', authRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ✅ SOCKET.IO (SIMPLE)

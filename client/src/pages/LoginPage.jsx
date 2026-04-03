@@ -19,8 +19,21 @@ export default function LoginPage() {
       toast.success(`Welcome back, ${data.user.name}! 🎉`);
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
-    } finally {
+  const msg = err.response?.data?.message;
+
+  if (msg === 'Please verify OTP first') {
+    toast.error('Please verify OTP first');
+
+    // 🔥 Redirect to OTP page
+    navigate('/verify-otp', {
+      state: { email: form.email }
+    });
+
+  } else {
+    toast.error(msg || 'Login failed');
+  }
+}
+   finally {
       setLoading(false);
     }
   };
