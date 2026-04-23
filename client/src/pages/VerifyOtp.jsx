@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import { clearOtpSession, readOtpSession, saveOtpSession } from '../utils/otpSession';
 
 export default function VerifyOtpPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const otpSession = readOtpSession();
 
-  const email = location.state?.email;
+  const email = location.state?.email || otpSession.email;
 
   const [otp, setOtp] = useState('');
-  const [devOtp, setDevOtp] = useState(location.state?.devOtp || '');
+  const [devOtp, setDevOtp] = useState(location.state?.devOtp || otpSession.devOtp || '');
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(30);
 
@@ -27,8 +29,11 @@ export default function VerifyOtpPage() {
   useEffect(() => {
     if (!email) {
       navigate('/register');
+      return;
     }
-  }, [email, navigate]);
+
+    saveOtpSession(email, devOtp);
+  }, [email, devOtp, navigate]);
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -36,6 +41,7 @@ export default function VerifyOtpPage() {
 
     try {
       await api.post('/auth/verify-otp', { email, otp });
+      clearOtpSession();
       toast.success('Account verified');
 
       setTimeout(() => {
@@ -71,9 +77,15 @@ export default function VerifyOtpPage() {
       <div className="card p-6 w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Verify OTP</h2>
 
+        {email && (
+          <p className="mb-3 text-sm text-gray-500">
+            Code sent for <strong>{email}</strong>
+          </p>
+        )}
+
         {devOtp && (
           <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            Email delivery is failing locally. Use this OTP for now: <strong>{devOtp}</strong>
+            Email delivery failed. Use this OTP for now: <strong>{devOtp}</strong>
           </div>
         )}
 

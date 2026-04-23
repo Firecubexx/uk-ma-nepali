@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import { saveOtpSession } from '../utils/otpSession';
 
 const UK_CITIES = [
   'London', 'Manchester', 'Birmingham', 'Leeds', 'Glasgow',
@@ -36,6 +37,7 @@ export default function RegisterPage() {
 
     try {
       const { data } = await api.post('/auth/register', form);
+      saveOtpSession(form.email, data.devOtp || '');
 
       if (data.devOtp) {
         toast.success(`Dev OTP: ${data.devOtp}`, { duration: 8000 });
