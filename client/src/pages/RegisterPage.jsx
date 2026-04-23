@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import imageCompression from 'browser-image-compression';
+import api from '../utils/api';
 
 const UK_CITIES = [
   'London', 'Manchester', 'Birmingham', 'Leeds', 'Glasgow',
@@ -37,21 +37,10 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
+      const res = await api.post('/auth/register', form);
+      const data = res.data;
 
       console.log("✅ RESPONSE:", data);
-
-      if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
 
       toast.success('OTP sent to your email 📩');
 
@@ -61,7 +50,7 @@ export default function RegisterPage() {
 
     } catch (err) {
       console.error(err);
-      toast.error(err.message || 'Registration failed');
+      toast.error(err.response?.data?.message || err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
