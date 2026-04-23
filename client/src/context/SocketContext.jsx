@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
+import { getApiOrigin } from '../utils/helpers';
 
-const API = import.meta.env.VITE_API_URL;
+const API = getApiOrigin();
 const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {

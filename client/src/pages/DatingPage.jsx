@@ -7,6 +7,7 @@ import { SpinnerPage, EmptyState, Modal } from '../components/common/UI';
 import Avatar from '../components/common/Avatar';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import { resolveMediaUrl } from '../utils/helpers';
 
 function MatchPopup({ match, onClose, onMessage }) {
   return (
@@ -41,7 +42,7 @@ function SwipeCard({ profile, onSwipe }) {
         {/* Profile photo */}
         <div className="relative h-96 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-gray-800 dark:to-gray-700">
           {profile.avatar ? (
-            <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+            <img src={resolveMediaUrl(profile.avatar)} alt={profile.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Avatar src={profile.avatar} name={profile.name} size="2xl" />

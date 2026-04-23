@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
+import { getApiOrigin } from '../utils/helpers';
 
-const API = import.meta.env.VITE_API_URL;
+const API = getApiOrigin();
 
 // Singleton socket for online tracking — shared across all hook instances
 let _socket = null;

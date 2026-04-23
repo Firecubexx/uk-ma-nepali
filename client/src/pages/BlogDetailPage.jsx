@@ -8,6 +8,7 @@ import Avatar from '../components/common/Avatar';
 import { useAuth } from '../context/AuthContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../utils/api';
+import { resolveMediaUrl } from '../utils/helpers';
 
 export default function BlogDetailPage() {
   const { id } = useParams();
@@ -57,7 +58,7 @@ export default function BlogDetailPage() {
       <article className="card overflow-hidden">
         {blog.coverImage && (
           <div className="h-56 sm:h-72 overflow-hidden">
-            <img src={blog.coverImage} alt={blog.title} className="w-full h-full object-cover" />
+            <img src={resolveMediaUrl(blog.coverImage)} alt={blog.title} className="w-full h-full object-cover" />
           </div>
         )}
 
