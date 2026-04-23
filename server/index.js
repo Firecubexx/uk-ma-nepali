@@ -77,6 +77,15 @@ io.on('connection', (socket) => {
 // PORT
 const PORT = process.env.PORT || 5000;
 
+console.log('Config check:', {
+  hasMongoUri: Boolean(process.env.MONGO_URI),
+  hasJwtSecret: Boolean(process.env.JWT_SECRET),
+  hasEmailUser: Boolean(process.env.EMAIL_USER),
+  hasEmailPass: Boolean(process.env.EMAIL_PASS),
+  allowDevOtp: process.env.ALLOW_DEV_OTP || '(unset)',
+  clientUrl: process.env.CLIENT_URL || '(unset)',
+});
+
 // MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
