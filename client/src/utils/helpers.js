@@ -97,6 +97,14 @@ export function readableSize(bytes) {
 }
 
 export function getApiOrigin() {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+
+    if (host === 'uk-ma-nepali-1.onrender.com') {
+      return 'https://uk-ma-nepali-3.onrender.com';
+    }
+  }
+
   const apiUrl = import.meta.env.VITE_API_URL;
 
   if (!apiUrl) return window.location.origin;
@@ -106,6 +114,16 @@ export function getApiOrigin() {
   }
 
   return window.location.origin;
+}
+
+export function getApiBaseUrl() {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  if (apiUrl) {
+    return apiUrl;
+  }
+
+  return `${getApiOrigin()}/api`;
 }
 
 export function resolveMediaUrl(src = '') {
