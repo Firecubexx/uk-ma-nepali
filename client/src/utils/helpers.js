@@ -95,3 +95,24 @@ export function readableSize(bytes) {
   if (bytes < 1_048_576)  return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1_048_576).toFixed(1)} MB`;
 }
+
+export function getApiOrigin() {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  if (!apiUrl) return window.location.origin;
+
+  if (apiUrl.startsWith('http://') || apiUrl.startsWith('https://')) {
+    return apiUrl.replace(/\/api\/?$/, '');
+  }
+
+  return window.location.origin;
+}
+
+export function resolveMediaUrl(src = '') {
+  if (!src) return '';
+  if (src.startsWith('data:') || src.startsWith('blob:')) return src;
+  if (src.startsWith('http://') || src.startsWith('https://')) return src;
+
+  const normalizedSrc = src.startsWith('/') ? src : `/${src}`;
+  return `${getApiOrigin()}${normalizedSrc}`;
+}

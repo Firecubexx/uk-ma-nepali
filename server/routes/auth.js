@@ -13,6 +13,10 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+const allowDevOtpFallback =
+  process.env.ALLOW_DEV_OTP === 'true' ||
+  (process.env.NODE_ENV !== 'production' && process.env.ALLOW_DEV_OTP !== 'false');
+
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, location, gender, age } = req.body;
@@ -63,6 +67,14 @@ router.post('/register', async (req, res) => {
     try {
       await sendEmail(normalizedEmail, 'Your OTP Code', `Your OTP is: ${otp}`);
     } catch (emailError) {
+      if (allowDevOtpFallback) {
+        return res.json({
+          message: 'Email delivery failed, using development OTP fallback',
+          email: normalizedEmail,
+          devOtp: otp,
+        });
+      }
+
       if (createdUser) {
         await User.findByIdAndDelete(user._id);
       }
@@ -182,7 +194,20 @@ router.post('/resend-otp', async (req, res) => {
     await user.save();
 
     console.log('New OTP for', normalizedEmail, 'is:', otp);
-    await sendEmail(normalizedEmail, 'Your OTP Code', `Your OTP is: ${otp}`);
+    try {
+      await sendEmail(normalizedEmail, 'Your OTP Code', `Your OTP is: ${otp}`);
+    } catch (emailError) {
+      if (allowDevOtpFallback) {
+        return res.json({
+          message: 'Email delivery failed, using development OTP fallback',
+          devOtp: otp,
+        });
+      }
+
+      return res.status(502).json({
+        message: emailError.message || 'Failed to send OTP email. Please try again.',
+      });
+    }
 
     res.json({ message: 'OTP resent successfully' });
   } catch (err) {

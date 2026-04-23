@@ -11,6 +11,7 @@ import Lightbox from '../common/Lightbox';
 import { useAuth } from '../../context/AuthContext';
 import { notify } from '../common/NotificationBell';
 import api from '../../utils/api';
+import { resolveMediaUrl } from '../../utils/helpers';
 
 export default function PostCard({ post, onDelete }) {
   const { user } = useAuth();
@@ -175,7 +176,7 @@ export default function PostCard({ post, onDelete }) {
       {post.images?.length > 0 && (
         <div className="relative bg-gray-100 dark:bg-gray-800">
           <img
-            src={post.images[imgIndex]}
+            src={resolveMediaUrl(post.images[imgIndex])}
             alt="Post image"
             className="w-full object-cover max-h-[480px] cursor-zoom-in"
             onClick={() => setLightbox(imgIndex)}

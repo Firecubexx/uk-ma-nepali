@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FiX, FiChevronLeft, FiChevronRight, FiZoomIn, FiZoomOut } from 'react-icons/fi';
+import { resolveMediaUrl } from '../../utils/helpers';
 
 /**
  * Lightbox — full-screen image viewer
@@ -62,7 +63,7 @@ export default function Lightbox({ images, startIndex = 0, onClose }) {
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <img
-          src={images[index]}
+          src={resolveMediaUrl(images[index])}
           alt={`Image ${index + 1}`}
           className={`rounded-xl shadow-2xl transition-transform duration-200 ${
             zoomed
@@ -105,7 +106,7 @@ export default function Lightbox({ images, startIndex = 0, onClose }) {
                 i === index ? 'ring-2 ring-white scale-110' : 'opacity-50 hover:opacity-80'
               }`}
             >
-              <img src={img} alt="" className="w-full h-full object-cover" />
+              <img src={resolveMediaUrl(img)} alt="" className="w-full h-full object-cover" />
             </button>
           ))}
         </div>

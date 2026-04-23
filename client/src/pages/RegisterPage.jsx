@@ -28,8 +28,6 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("🔥 SUBMIT CLICKED");
-
     if (form.password.length < 6) {
       return toast.error('Password must be at least 6 characters');
     }
@@ -37,19 +35,18 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await api.post('/auth/register', form);
-      const data = res.data;
+      const { data } = await api.post('/auth/register', form);
 
-      console.log("✅ RESPONSE:", data);
-
-      toast.success('OTP sent to your email 📩');
+      if (data.devOtp) {
+        toast.success(`Dev OTP: ${data.devOtp}`, { duration: 8000 });
+      } else {
+        toast.success('OTP sent to your email');
+      }
 
       navigate('/verify-otp', {
-        state: { email: form.email }
+        state: { email: form.email, devOtp: data.devOtp || '' }
       });
-
     } catch (err) {
-      console.error(err);
       toast.error(err.response?.data?.message || err.message || 'Registration failed');
     } finally {
       setLoading(false);
@@ -59,9 +56,8 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-4">
       <div className="w-full max-w-md">
-
         <div className="text-center mb-8">
-          <div className="text-6xl mb-3">🇳🇵</div>
+          <div className="text-6xl mb-3">NP</div>
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
             UK ma Nepali
           </h1>
@@ -74,7 +70,6 @@ export default function RegisterPage() {
           <h2 className="text-xl font-bold mb-6">Create your account</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-
             <input
               type="text"
               className="input-field"
@@ -138,13 +133,11 @@ export default function RegisterPage() {
             >
               {loading ? 'Creating...' : 'Register'}
             </button>
-
           </form>
 
           <div className="mt-4 text-center">
             <Link to="/login">Already have account? Login</Link>
           </div>
-
         </div>
       </div>
     </div>

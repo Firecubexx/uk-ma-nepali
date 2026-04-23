@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import Avatar from '../common/Avatar';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
+import { resolveMediaUrl } from '../../utils/helpers';
 
 // Individual story viewer modal
 function StoryViewer({ stories, startIndex, onClose }) {
@@ -53,7 +54,7 @@ function StoryViewer({ stories, startIndex, onClose }) {
       {/* Story content */}
       <div className="w-full max-w-sm h-screen flex items-center justify-center relative">
         {story.media ? (
-          <img src={story.media} alt="Story" className="w-full h-full object-cover" />
+          <img src={resolveMediaUrl(story.media)} alt="Story" className="w-full h-full object-cover" />
         ) : (
           <div
             className="w-full h-full flex items-center justify-center p-8"

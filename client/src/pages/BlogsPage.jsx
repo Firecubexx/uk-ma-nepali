@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { SpinnerPage, EmptyState, Modal } from '../components/common/UI';
 import Avatar from '../components/common/Avatar';
 import api from '../utils/api';
+import { resolveMediaUrl } from '../utils/helpers';
 
 const CATEGORIES = ['all', 'life-in-uk', 'culture', 'travel', 'food', 'career', 'education', 'news', 'health'];
 
@@ -15,7 +16,7 @@ function BlogCard({ blog }) {
     <Link to={`/blogs/${blog._id}`} className="card overflow-hidden hover:shadow-md transition-shadow fade-in block group">
       {blog.coverImage && (
         <div className="h-44 overflow-hidden">
-          <img src={blog.coverImage} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <img src={resolveMediaUrl(blog.coverImage)} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
       )}
       <div className="p-4">

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { resolveMediaUrl } from '../../utils/helpers';
 
 const SIZES = {
   xs:   'w-8 h-8 text-xs',
@@ -32,13 +33,14 @@ export default function Avatar({ src, name = '?', size = 'md', className = '', o
 
   const initials = name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
   const colorClass = PALETTE[(name.charCodeAt(0) || 0) % PALETTE.length];
-  const showImage  = src && !imgError;
+  const imageSrc = resolveMediaUrl(src);
+  const showImage  = imageSrc && !imgError;
 
   return (
     <div className={`relative inline-flex shrink-0 ${className}`}>
       {showImage ? (
         <img
-          src={src}
+          src={imageSrc}
           alt={name}
           onError={() => setImgError(true)}
           className={`${SIZES[size]} rounded-full object-cover ring-2 ring-white dark:ring-gray-900 bg-gray-100`}

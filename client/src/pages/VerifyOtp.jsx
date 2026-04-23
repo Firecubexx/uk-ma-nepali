@@ -10,10 +10,10 @@ export default function VerifyOtpPage() {
   const email = location.state?.email;
 
   const [otp, setOtp] = useState('');
+  const [devOtp, setDevOtp] = useState(location.state?.devOtp || '');
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(30);
 
-  // ⏳ Countdown
   useEffect(() => {
     if (timer === 0) return;
 
@@ -24,29 +24,23 @@ export default function VerifyOtpPage() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // ❗ If no email, redirect
   useEffect(() => {
     if (!email) {
       navigate('/register');
     }
   }, [email, navigate]);
 
-  // 🔐 Verify OTP
   const handleVerify = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
       await api.post('/auth/verify-otp', { email, otp });
+      toast.success('Account verified');
 
-      toast.success('Account verified 🎉');
-
-      // 🔄 Redirect after success
       setTimeout(() => {
         navigate('/login');
       }, 1000);
-
     } catch (err) {
       toast.error(err.response?.data?.message || 'Invalid OTP');
     } finally {
@@ -54,14 +48,19 @@ export default function VerifyOtpPage() {
     }
   };
 
-  // 🔁 Resend OTP
   const handleResend = async () => {
     try {
-      await api.post('/auth/resend-otp', { email });
+      const { data } = await api.post('/auth/resend-otp', { email });
 
-      toast.success('OTP resent 📩');
-      setTimer(30); // reset timer
+      if (data.devOtp) {
+        setDevOtp(data.devOtp);
+        toast.success(`Dev OTP: ${data.devOtp}`, { duration: 8000 });
+      } else {
+        setDevOtp('');
+        toast.success('OTP resent');
+      }
 
+      setTimer(30);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to resend OTP');
     }
@@ -71,6 +70,12 @@ export default function VerifyOtpPage() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="card p-6 w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Verify OTP</h2>
+
+        {devOtp && (
+          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Email delivery is failing locally. Use this OTP for now: <strong>{devOtp}</strong>
+          </div>
+        )}
 
         <form onSubmit={handleVerify} className="space-y-4">
           <input
@@ -91,7 +96,6 @@ export default function VerifyOtpPage() {
           </button>
         </form>
 
-        {/* ⏳ Timer + Resend */}
         <div className="mt-4 text-center">
           {timer > 0 ? (
             <p className="text-gray-500">

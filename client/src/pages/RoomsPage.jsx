@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { SpinnerPage, EmptyState, Modal } from '../components/common/UI';
 import Avatar from '../components/common/Avatar';
 import api from '../utils/api';
+import { resolveMediaUrl } from '../utils/helpers';
 
 const ROOM_TYPES = ['single-room', 'double-room', 'studio', 'flat', 'house-share', 'en-suite'];
 const AMENITIES_LIST = ['WiFi', 'Bills Included', 'Parking', 'Garden', 'Washing Machine', 'Near Transport', 'Furnished', 'Pet Friendly'];
@@ -20,7 +21,7 @@ function RoomCard({ room }) {
       <div className="relative h-48 bg-gray-100 dark:bg-gray-800">
         {room.images?.length > 0 ? (
           <>
-            <img src={room.images[imgIdx]} alt={room.title} className="w-full h-full object-cover" />
+            <img src={resolveMediaUrl(room.images[imgIdx])} alt={room.title} className="w-full h-full object-cover" />
             {room.images.length > 1 && (
               <div className="absolute bottom-2 right-2 flex gap-1">
                 {room.images.map((_, i) => (
