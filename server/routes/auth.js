@@ -32,25 +32,16 @@ router.post('/register', async (req, res) => {
     }
 
     const otp = generateOTP();
-
     console.log("OTP for", email, "is:", otp);
 
     const user = await User.create({
-      name,
-      email,
-      password,
-      location,
-      gender,
-      age,
+      name, email, password, location, gender, age,
       otp,
       otpExpire: Date.now() + 10 * 60 * 1000,
       isVerified: false,
     });
 
-    // 📧 Send OTP
-    console.log("OTP:", otp);
     await sendEmail(email, 'Your OTP Code', `Your OTP is: ${otp}`);
-
     res.json({ message: 'OTP sent to your email', email });
 
   } catch (err) {
@@ -75,10 +66,8 @@ router.post('/verify-otp', async (req, res) => {
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpire = undefined;
-
     await user.save();
 
-    // ✅ AUTO LOGIN AFTER VERIFY
     res.json({
       token: generateToken(user._id),
       user: {
@@ -145,12 +134,7 @@ router.get('/me', async (req, res) => {
     }
 
     const token = authHeader.split(' ')[1];
-
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || 'secret'
-    );
-
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
     const user = await User.findById(decoded.id).select('-password');
 
     res.json(user);
@@ -159,8 +143,6 @@ router.get('/me', async (req, res) => {
     res.status(401).json({ message: 'Invalid token' });
   }
 });
-
-module.exports = router;
 
 // ======================
 // 🔁 RESEND OTP
@@ -180,14 +162,11 @@ router.post('/resend-otp', async (req, res) => {
     }
 
     const otp = generateOTP();
-
     user.otp = otp;
     user.otpExpire = Date.now() + 10 * 60 * 1000;
-
     await user.save();
 
     console.log("🔁 NEW OTP:", otp);
-
     await sendEmail(email, 'Your OTP Code', `Your OTP is: ${otp}`);
 
     res.json({ message: 'OTP resent successfully' });
@@ -196,3 +175,6 @@ router.post('/resend-otp', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// ✅ module.exports MUST be at the very end
+module.exports = router;
